@@ -1,0 +1,36 @@
+
+.responsive-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.responsive-table th, .responsive-table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+@media (max-width: 767px) {
+    .desktop-only {
+        display: none;
+    }
+
+   
+    .responsive-table th:nth-child(n+3), .responsive-table td:nth-child(n+3),
+    .responsive-table th:nth-child(n+4), .responsive-table td:nth-child(n+4),
+    .responsive-table th:nth-child(n+5), .responsive-table td:nth-child(n+5) {
+        display: none;
+    }
+
+
+    .mobile-header {
+        display: table-header-group;
+    }
+
+    .mobile-header th:nth-child(1), .mobile-header td:nth-child(1),
+    .mobile-header th:nth-child(2), .mobile-header td:nth-child(2),
+    .mobile-header th:nth-child(3), .mobile-header td:nth-child(3) {
+        display: table-cell;
+    }
+}
+
