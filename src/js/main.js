@@ -95,4 +95,19 @@ function getEmployees() {
         .catch(error => console.error('Erro ao obter funcionários:', error));
 }
 
+
+function filterEmployees() {
+    const filterValue = document.getElementById('search').value.toLowerCase();
+    displayedEmployees = allEmployees.filter(employee => 
+        employee.name.toLowerCase().includes(filterValue) ||
+        employee.job.toLowerCase().includes(filterValue) ||
+        formatPhoneNumber(employee.phone).toLowerCase().includes(filterValue)|| // Pesquisa pelo número formatado
+        employee.phone.replace(/\D/g, '').includes(filterValue) 
+    );
+    document.getElementById('employees').innerHTML = '';
+    showEmployees();
+}
+
+
 document.addEventListener('DOMContentLoaded', getEmployees);
+document.getElementById('search').addEventListener('input', filterEmployees);
