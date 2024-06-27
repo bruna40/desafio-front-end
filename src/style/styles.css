@@ -1,14 +1,12 @@
 @import url("./header.css");
 @import url("./search.css");
 @import url("./table.css");
+@import url("./rodape.css");
 
 
 :root {
     --cor-de-fundo: #F0F0F0;
-    --branco: #FFFFFF;
-    --laranja: #EB9B00;
-    --azul-degrade: linear-gradient(97.54deg, #002F52 35.49%, #326589 165.37%);
-    --login-degrade: linear-gradient(80deg, #007bff -3.31%, #e2d1ff 100.71%);
+
     --fonte-principal: "Roboto";
     --azul: #002F52;
     --preto: #000000;
@@ -23,12 +21,15 @@
 }
 
 
+
+
 main {
     background-color: var(--cor-de-fundo);
     font-family: var(--fonte-principal);
     font-size: 1rem;
     font-weight: 400;
     width: 100%;  
+    height: 85vh;
 }
 h1 {
     font-size: 1.5rem;

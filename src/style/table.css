@@ -9,11 +9,30 @@
     border-bottom: 1px solid #ddd;
 }
 
-.responsive-table th {
-    background-color: #f2f2f2;
+.responsive-table td {
+    background-color: white;
 }
-img {
-    width: 24px;
+
+.responsive-table th {
+    background: linear-gradient(180deg, #5A84C0 0%, #594ED2 100%);
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.8;
+}
+
+th:first-child {
+    border-top-left-radius: 0.5rem;
+    padding-left: 1.5rem;
+  }
+
+th:last-child {
+    border-top-right-radius: 0.5rem;
+    padding-right: 1.5rem;
+}
+.responsive-table img {
+    width: 34px;
+    border-radius: 50%;
 }
 
 @media (max-width: 768px) {
