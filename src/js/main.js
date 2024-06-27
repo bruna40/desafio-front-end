@@ -21,44 +21,76 @@ function showEmployees() {
     tableBody.innerHTML = '';
 
     displayedEmployees.forEach(employee => {
-        const row = createTableRow(employee);
-        tableBody.appendChild(row);
+        const mainRow = createMainRow(employee);
+        tableBody.appendChild(mainRow);
+
+        const detailsRow = createDetailsRow(employee);
+        tableBody.appendChild(detailsRow);
+
+        const expandCell = mainRow.querySelector('.expand-button-cell');
+        expandCell.addEventListener('click', () => {
+            detailsRow.classList.toggle('visible');
+        });
     });
 }
 
-function createTableRow(employee) {
-    const row = document.createElement('tr');
+function createMainRow(employee) {
+    const mainRow = document.createElement('tr');
 
-    const cellFoto = createTableCell('img', employee.image, employee.name, 'employee-img');
+    const cellFoto = createTableCell('td', '', 'employee-img');
+    const img = document.createElement('img');
+    img.src = employee.image;
+    img.alt = employee.name;
+    img.classList.add('employee-img');
+    cellFoto.appendChild(img);
+
     const cellNome = createTableCell('td', employee.name);
-    const cellCargo = createTableCell('td', employee.job);
-    const cellAdmissao = createTableCell('td', formatDate(employee.admission_date));
-    const cellPhone = createTableCell('td', formatPhoneNumber(employee.phone));
+    const cellExpand = createTableCell('td', '&#x25BC;', 'expand-button-cell', 'mobile-only');
 
-    row.appendChild(cellFoto);
-    row.appendChild(cellNome);
-    row.appendChild(cellCargo);
-    row.appendChild(cellAdmissao);
-    row.appendChild(cellPhone);
 
-    return row;
+    const cellCargo = createTableCell('td', employee.job, 'desktop-only');
+    const cellAdmissao = createTableCell('td', formatDate(employee.admission_date), 'desktop-only');
+    const cellPhone = createTableCell('td', formatPhoneNumber(employee.phone), 'desktop-only');
+
+    mainRow.appendChild(cellFoto);
+    mainRow.appendChild(cellNome);
+    mainRow.appendChild(cellExpand);
+    mainRow.appendChild(cellCargo);
+    mainRow.appendChild(cellAdmissao);
+    mainRow.appendChild(cellPhone);
+
+
+    return mainRow;
 }
 
-function createTableCell(elementType, contentOrSrc, alt = '', className = '') {
-    const cell = document.createElement('td');
+function createDetailsRow(employee) {
+    const detailsRow = document.createElement('tr');
+    detailsRow.classList.add('details-row', 'mobile-only');
 
-    if (elementType === 'img') {
-        const img = document.createElement('img');
-        img.src = contentOrSrc;
-        img.alt = alt;
-        img.classList.add(className);
-        cell.appendChild(img);
-    } else {
-        cell.textContent = contentOrSrc;
-    }
+    const detailsCell = document.createElement('td');
+    detailsCell.colSpan = 3;
 
+    detailsCell.innerHTML = `
+        <div class="details-content">
+            <p><strong>Cargo:</strong> ${employee.job}</p>
+            <p><strong>Data de Admissão:</strong> ${formatDate(employee.admission_date)}</p>
+            <p><strong>Telefone:</strong> ${formatPhoneNumber(employee.phone)}</p>
+        </div>
+    `;
+
+    detailsRow.appendChild(detailsCell);
+    return detailsRow;
+}
+
+function createTableCell(elementType, text, ...classNames) {
+    const cell = document.createElement(elementType);
+    classNames.forEach(className => {
+        cell.classList.add(className);
+    });
+    cell.innerHTML = text;
     return cell;
 }
+
 function getEmployees() {
     fetch(URL)
         .then(response => {
@@ -69,7 +101,7 @@ function getEmployees() {
         })
         .then(data => {
             allEmployees = data;
-            displayedEmployees = data.slice(); // Copia os dados para displayedEmployees
+            displayedEmployees = data.slice();
             showEmployees();
         })
         .catch(error => console.error('Erro ao obter funcionários:', error));
