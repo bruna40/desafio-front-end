@@ -12,6 +12,12 @@
 
 }
 
+.container-search {
+    display: flex;
+    flex-direction: column;
+
+}
+
 .search .icon-search {
     width: 24px; 
     height: 24px; 
@@ -29,4 +35,21 @@
 
 .search input::placeholder {
     color: #ccc; 
+}
+
+@media (min-width: 767px) {
+    .container-search {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    
+    }
+
+    .search  {
+        width:287px;
+        height: 48px;
+        margin-top: 1rem;
+    }
+   
+    
 }

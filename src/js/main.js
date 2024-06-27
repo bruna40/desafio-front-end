@@ -1,36 +1,8 @@
+import { formatPhoneNumber } from './formatNumber.js';
+
 const URL = "http://localhost:3000/employees";
 let displayedEmployees = [];
 let allEmployees = [];
-
-function formatPhoneNumber(phoneNumber) {
-    // Limpa todos os caracteres não numéricos
-    const cleaned = ('' + phoneNumber).replace(/\D/g, '');
-
-    // Verifica se o número tem 11 dígitos (com código de país)
-    const match = cleaned.match(/^(\d{2})(\d{2})(\d{5})(\d{4})$/);
-
-    if (match) {
-        // Formato com código de país e código de área
-        return `+${match[1]} (${match[2]}) ${match[3]}-${match[4]}`;
-    } else {
-        // Verifica se o número tem 10 dígitos (com código de área)
-        const matchWithAreaCode = cleaned.match(/^(\d{2})(\d{5})(\d{4})$/);
-        if (matchWithAreaCode) {
-            // Formato com código de área
-            return `(${matchWithAreaCode[1]}) ${matchWithAreaCode[2]}-${matchWithAreaCode[3]}`;
-        } else {
-            // Verifica se o número tem 9 dígitos (sem código de área)
-            const matchWithoutAreaCode = cleaned.match(/^(\d{5})(\d{4})$/);
-            if (matchWithoutAreaCode) {
-                // Formato sem código de área
-                return `${matchWithoutAreaCode[1]}-${matchWithoutAreaCode[2]}`;
-            } else {
-                // Caso não corresponda a nenhum formato conhecido, retorna o número original
-                return phoneNumber;
-            }
-        }
-    }
-}
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -46,68 +18,78 @@ function showEmployees() {
         console.error("Elemento tbody não encontrado.");
         return;
     }
-    tableBody.innerHTML = ''; // Limpa o conteúdo anterior da tabela antes de adicionar novas linhas
+    tableBody.innerHTML = '';
 
     displayedEmployees.forEach(employee => {
-        const row = document.createElement('tr');
-        
-        // Criando células para cada coluna
-        const cellFoto = document.createElement('td');
-        const img = document.createElement('img');
-        img.src = employee.image; // Substitua com a lógica apropriada para o URL da imagem
-        img.alt = employee.name; // Substitua com a lógica apropriada para o texto alternativo da imagem
-        img.classList.add('employee-img'); // Adiciona uma classe à imagem se necessário
-        cellFoto.appendChild(img); // Adiciona a imagem à célula
-        
-        const cellNome = document.createElement('td');
-        cellNome.textContent = employee.name; // Substitua com a lógica apropriada para o nome
-        
-        const cellCargo = document.createElement('td');
-        cellCargo.textContent = employee.job; // Substitua com a lógica apropriada para o cargo
-        
-        const cellAdmissao = document.createElement('td');
-        cellAdmissao.textContent = formatDate(employee.admission_date); // Substitua com a lógica apropriada para a data de admissão
-        
-        const cellPhone = document.createElement('td');
-        cellPhone.textContent = formatPhoneNumber(employee.phone); // Formata o telefone usando a função
-        
-        // Adicionando as células à linha da tabela
-        row.appendChild(cellFoto);
-        row.appendChild(cellNome);
-        row.appendChild(cellCargo);
-        row.appendChild(cellAdmissao);
-        row.appendChild(cellPhone);
-        
-        // Adicionando a linha à tabela
+        const row = createTableRow(employee);
         tableBody.appendChild(row);
     });
 }
 
+function createTableRow(employee) {
+    const row = document.createElement('tr');
+
+    const cellFoto = createTableCell('img', employee.image, employee.name, 'employee-img');
+    const cellNome = createTableCell('td', employee.name);
+    const cellCargo = createTableCell('td', employee.job);
+    const cellAdmissao = createTableCell('td', formatDate(employee.admission_date));
+    const cellPhone = createTableCell('td', formatPhoneNumber(employee.phone));
+
+    row.appendChild(cellFoto);
+    row.appendChild(cellNome);
+    row.appendChild(cellCargo);
+    row.appendChild(cellAdmissao);
+    row.appendChild(cellPhone);
+
+    return row;
+}
+
+function createTableCell(elementType, contentOrSrc, alt = '', className = '') {
+    const cell = document.createElement('td');
+
+    if (elementType === 'img') {
+        const img = document.createElement('img');
+        img.src = contentOrSrc;
+        img.alt = alt;
+        img.classList.add(className);
+        cell.appendChild(img);
+    } else {
+        cell.textContent = contentOrSrc;
+    }
+
+    return cell;
+}
 function getEmployees() {
     fetch(URL)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erro na requisição: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            allEmployees = data; // Armazena todos os funcionários recebidos do servidor
-            displayedEmployees = data; // Define os funcionários a serem exibidos inicialmente como todos os recebidos
-            
-            showEmployees(); // Mostra os funcionários na tabela
+            allEmployees = data;
+            displayedEmployees = data.slice(); // Copia os dados para displayedEmployees
+            showEmployees();
         })
         .catch(error => console.error('Erro ao obter funcionários:', error));
 }
 
-
 function filterEmployees() {
-    const filterValue = document.getElementById('search').value.toLowerCase();
+    const filterValue = document.getElementById('search').value.trim().toLowerCase();
     displayedEmployees = allEmployees.filter(employee => 
         employee.name.toLowerCase().includes(filterValue) ||
         employee.job.toLowerCase().includes(filterValue) ||
-        formatPhoneNumber(employee.phone).toLowerCase().includes(filterValue)|| // Pesquisa pelo número formatado
-        employee.phone.replace(/\D/g, '').includes(filterValue) 
+        formatPhoneNumber(employee.phone).toLowerCase().includes(filterValue) ||
+        employee.phone.replace(/\D/g, '').includes(filterValue)
     );
-    document.getElementById('employees').innerHTML = '';
     showEmployees();
 }
 
-
-document.addEventListener('DOMContentLoaded', getEmployees);
-document.getElementById('search').addEventListener('input', filterEmployees);
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+        searchInput.addEventListener('input', filterEmployees);
+    }
+    getEmployees();
+});
