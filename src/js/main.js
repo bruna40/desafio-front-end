@@ -1,8 +1,6 @@
 import { formatPhoneNumber } from './formatNumber.js';
+import { getEmployees, displayedEmployees } from './fetch.js';
 
-const URL = "http://localhost:3000/employees";
-let displayedEmployees = [];
-let allEmployees = [];
 
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -12,7 +10,7 @@ function formatDate(dateString) {
     return `${day}/${month}/${year}`;
 }
 
-function showEmployees() {
+export function showEmployees() {
     const tableBody = document.getElementById("employees");
     if (!tableBody) {
         console.error("Elemento tbody não encontrado.");
@@ -91,21 +89,7 @@ function createTableCell(elementType, text, ...classNames) {
     return cell;
 }
 
-function getEmployees() {
-    fetch(URL)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Erro na requisição: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            allEmployees = data;
-            displayedEmployees = data.slice();
-            showEmployees();
-        })
-        .catch(error => console.error('Erro ao obter funcionários:', error));
-}
+
 
 function filterEmployees() {
     const filterValue = document.getElementById('search').value.trim().toLowerCase();
