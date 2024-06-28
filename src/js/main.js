@@ -1,13 +1,26 @@
 import { formatPhoneNumber } from './formatNumber.js';
-import { getEmployees, displayedEmployees } from './fetch.js';
 
+import { formatDate } from './formatDate.js';
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString();
-    return `${day}/${month}/${year}`;
+const URL = "http://localhost:3000/employees";
+
+export let allEmployees = [];
+export let displayedEmployees = [];
+
+export function getEmployees() {
+    fetch(URL)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erro na requisição: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            allEmployees = data;
+            displayedEmployees = data.slice();
+            showEmployees();
+        })
+        .catch(error => console.error('Erro ao obter funcionários:', error));
 }
 
 export function showEmployees() {
@@ -43,8 +56,16 @@ function createMainRow(employee) {
     cellFoto.appendChild(img);
 
     const cellNome = createTableCell('td', employee.name);
-    const cellExpand = createTableCell('td', '&#x25BC;', 'expand-button-cell', 'mobile-only');
+    const cellExpand = createTableCell('td', '<img src="./assets/arrow-down.png"/>', 'expand-button-cell', 'mobile-only');
 
+    cellExpand.addEventListener('click', function() {
+        const img = this.querySelector('img');
+        if (img.src.includes('arrow-down.png')) {
+            img.src = './assets/arrow-up.png'; 
+        } else {
+            img.src = './assets/arrow-down.png';
+        }
+    });
 
     const cellCargo = createTableCell('td', employee.job, 'desktop-only');
     const cellAdmissao = createTableCell('td', formatDate(employee.admission_date), 'desktop-only');
@@ -70,9 +91,9 @@ function createDetailsRow(employee) {
 
     detailsCell.innerHTML = `
         <div class="details-content">
-            <p><strong>Cargo:</strong> ${employee.job}</p>
-            <p><strong>Data de Admissão:</strong> ${formatDate(employee.admission_date)}</p>
-            <p><strong>Telefone:</strong> ${formatPhoneNumber(employee.phone)}</p>
+            <p class="details-content-line"><span>Cargo</span> ${employee.job}</p>
+            <p class="details-content-line"><span>Data de Admissão</span> ${formatDate(employee.admission_date)}</p>
+            <p class="details-content-line"><span>Telefone</span> ${formatPhoneNumber(employee.phone)}</p>
         </div>
     `;
 
