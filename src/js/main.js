@@ -110,8 +110,6 @@ function createTableCell(elementType, text, ...classNames) {
     return cell;
 }
 
-
-
 function filterEmployees() {
     const filterValue = document.getElementById('search').value.trim().toLowerCase();
     displayedEmployees = allEmployees.filter(employee => 

@@ -14,7 +14,9 @@
 }
 
 
-
+.responsive-table th {
+    text-transform: uppercase;
+}
 .details-content-line {
     display: flex;
     justify-content: space-between;
@@ -71,6 +73,10 @@ td:nth-child(2) {
 
 th:nth-child(2) {
     padding-left: 5rem;
+}
+
+.details-content-line span {
+    font-weight: bold;
 }
 
 .employee-img img{
